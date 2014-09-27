@@ -48,7 +48,7 @@ module.exports = (robot) ->
   addPlayer = (msg, nick) ->
     init msg
     players = robot.brain.data.foos[getRoom(msg)]
-    players.push(nick)
+    players.push(nick) if nick not in players
     showLineup msg
     if players.length == maxLength - 1
       msg.send 'One more player needed!'
@@ -57,7 +57,7 @@ module.exports = (robot) ->
       robot.brain.data.foos[getRoom(msg)] = []
 
   robot.hear /csocso(\?|(\s?(me|\+1)))/i, (msg) ->
-    addPlayer(msg, '@' + msg.message.user.mention_name)
+    addPlayer(msg, '@' + msg.message.user.name)
 
   robot.hear /csocso\s(@.*)/i, (msg) ->
     addPlayer(msg, msg.match[1])
@@ -65,7 +65,7 @@ module.exports = (robot) ->
   robot.hear /csocso\sremove/i, (msg) ->
     init msg
     room = getRoom(msg)
-    player = '@' + msg.message.user.mention_name
+    player = '@' + msg.message.user.name
     robot.brain.data.foos[room] = _.without(robot.brain.data.foos[room], player)
     showLineup msg
 
