@@ -23,6 +23,38 @@
 
 _ = require('lodash')
 
+class FoosballTeam
+  @@TEAM_REGEX = /(\d?) ?(@?[\w-\.\d]+ @?[\w-\.\d]+) ?(\d)?/
+
+  constructor: (team_msg) ->
+    groups = @@TEAM_REGEX.exec(team_msg)
+    @score = groups[1] || groups[3]
+    @players = groups[2]
+
+  valid: () ->
+    @score && @players && true
+
+class FoosballMatch
+  constructor: (msg) ->
+    @teams = msg.split(/\sx\s/i).map (team_msg, i)->
+      new FoosballTeam(team_msg)
+
+  valid: () ->
+    teams[0].valid() && teams[1].valid()
+
+  as_json: () ->
+    JSON.stringfify(
+      score_a: teams[0].score
+      score_b: teams[1].score
+      team_a_player_names: teams[0].players
+      team_b_player_names: teams[1].players
+    )
+
+  submit: (robot) ->
+    robot.http("http://leaguelo.proglabs.co/matches")
+      .post(@as_json) (err, res, body) ->
+        #TODO handle response
+
 module.exports = (robot) ->
   maxLength = 4
   robot.brain.data.foos ?= {}
@@ -56,6 +88,10 @@ module.exports = (robot) ->
       msg.send 'Go go go!'
       robot.brain.data.foos[getRoom(msg)] = []
 
+  addMatch = (msg) ->
+    match = new FoosballMatch(msg)
+    match.submit(robot) if match.valid()
+
   robot.hear /csocso(\?|(\s?(me|\+1)))/i, (msg) ->
     addPlayer(msg, '@' + msg.message.user.name)
 
@@ -79,3 +115,6 @@ module.exports = (robot) ->
 
   robot.hear /csocso\stable/i, (msg) ->
     msg.send process.env.HUBOT_FOOS_TABLE
+
+  robot.hear /csocso\smatch/i, (msg) ->
+    addMatch msg
