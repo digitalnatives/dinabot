@@ -56,7 +56,7 @@ module.exports = (robot) ->
       msg.send 'Go go go!'
       robot.brain.data.foos[getRoom(msg)] = []
 
-  robot.hear /^csocso(\?|(\s?(me|\+1)))/i, (msg) ->
+  robot.hear /^csocso(\?|\sme|\s\+1)/i, (msg) ->
     addPlayer(msg, '@' + msg.message.user.name)
 
   robot.hear /^csocso\s(@.*)/i, (msg) ->
