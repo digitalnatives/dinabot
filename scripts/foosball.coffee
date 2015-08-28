@@ -59,8 +59,9 @@ module.exports = (robot) ->
   robot.hear /^csocso(\?|\sme|\s\+1)/i, (msg) ->
     addPlayer(msg, '@' + msg.message.user.name)
 
-  robot.hear /^csocso\s(@.*)/i, (msg) ->
-    addPlayer(msg, msg.match[1])
+  robot.hear /^csocso((?:\s@[^\s]+){1,4})/i, (msg) ->
+    players = msg.match[1].trim().split(' ')
+    addPlayer(msg, player) for player in players
 
   robot.hear /^csocso\sremove/i, (msg) ->
     init msg
