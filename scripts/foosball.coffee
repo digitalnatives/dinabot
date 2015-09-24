@@ -56,26 +56,27 @@ module.exports = (robot) ->
       msg.send 'Go go go!'
       robot.brain.data.foos[getRoom(msg)] = []
 
-  robot.hear /csocso(\?|(\s?(me|\+1)))/i, (msg) ->
+  robot.hear /^csocso(\?|\sme|\s\+1)/i, (msg) ->
     addPlayer(msg, '@' + msg.message.user.name)
 
-  robot.hear /csocso\s(@.*)/i, (msg) ->
-    addPlayer(msg, msg.match[1])
+  robot.hear /^csocso((?:\s@[^\s]+){1,4})/i, (msg) ->
+    players = msg.match[1].trim().split(' ')
+    addPlayer(msg, player) for player in players
 
-  robot.hear /csocso\sremove/i, (msg) ->
+  robot.hear /^csocso\sremove/i, (msg) ->
     init msg
     room = getRoom(msg)
     player = '@' + msg.message.user.name
     robot.brain.data.foos[room] = _.without(robot.brain.data.foos[room], player)
     showLineup msg
 
-  robot.hear /csocso\sclear/i, (msg) ->
+  robot.hear /^csocso\sclear/i, (msg) ->
     robot.brain.data.foos[getRoom(msg)] = []
     showLineup msg
 
-  robot.hear /csocso\sshow/i, (msg) ->
+  robot.hear /^csocso\sshow/i, (msg) ->
     init msg
     showLineup msg
 
-  robot.hear /csocso\stable/i, (msg) ->
+  robot.hear /^csocso\stable/i, (msg) ->
     msg.send process.env.HUBOT_FOOS_TABLE
