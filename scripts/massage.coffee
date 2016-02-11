@@ -13,6 +13,12 @@ _ = require('lodash')
 module.exports = (robot) ->
   robot.brain.data.massage_queue ?= {}
 
+
+  robot.on "massage:start", ->
+
+    robot.brain.data.massage_queue['massage'] = []
+    robot.messageRoom "massage", "Massage queue is empty now, Add yourself to the queue using `massage me` or `massage next`"
+
   getRoom = (msg) ->
     msg.message.user.room ? 'general'
 
@@ -39,8 +45,12 @@ module.exports = (robot) ->
     show_queue msg
 
   robot.hear /^massage(\?|\sstart|\s\+1)/i, (msg) ->
-    robot.brain.data.massage_queue[getRoom(msg)] = []
-    show_queue msg
+    name = msg.message.user.name
+    if name == 'ritacica'
+      robot.brain.data.massage_queue[getRoom(msg)] = []
+      show_queue msg
+    else
+      msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on thursday at 13:00"
 
   robot.hear /^massage(\?|\sme|\s\+1)/i, (msg) ->
     add_to_queue msg
@@ -60,8 +70,12 @@ module.exports = (robot) ->
     show_queue msg
 
   robot.hear /^massage\sclear/i, (msg) ->
-    robot.brain.data.massage_queue[getRoom(msg)] = []
-    show_queue msg
+    name = msg.message.user.name
+    if name == 'ritacica'
+      robot.brain.data.massage_queue[getRoom(msg)] = []
+      show_queue msg
+    else
+      msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on thursday at 13:00"
 
   robot.hear /^massage\sshow/i, (msg) ->
     init msg
