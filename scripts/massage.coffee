@@ -50,7 +50,7 @@ module.exports = (robot) ->
       robot.brain.data.massage_queue[getRoom(msg)] = []
       show_queue msg
     else
-      msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on thursday at 13:00"
+      msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on wednesday at 12:00"
 
   robot.hear /^massage(\?|\sme|\s\+1)/i, (msg) ->
     add_to_queue msg

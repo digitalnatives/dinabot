@@ -1,7 +1,7 @@
 [
 
     {
-        "time": "00 00 13 * * 4 ",
+        "time": "00 00 12 * * 3 ",
         "event": "massage:start"
     }
 ]
