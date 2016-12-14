@@ -44,14 +44,17 @@ module.exports = (robot) ->
       players.push(user)
     show_queue msg
 
-  robot.hear /^massage(\?|\sstart|\s\+1)/i, (msg) ->
-    name = msg.message.user.name
+  clear_massage = (msg, name) ->
     if name == 'ritacica'
       robot.brain.data.massage_queue[getRoom(msg)] = []
       show_queue msg
     else
       msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on wednesday at 12:00"
 
+  robot.hear /^massage(\?|\sstart|\s\+1)/i, (msg) ->
+    name = msg.message.user.name
+    clear_massage(msg, name)
+    
   robot.hear /^massage(\?|\sme|\s\+1)/i, (msg) ->
     add_to_queue msg
 
@@ -71,11 +74,7 @@ module.exports = (robot) ->
 
   robot.hear /^massage\sclear/i, (msg) ->
     name = msg.message.user.name
-    if name == 'ritacica'
-      robot.brain.data.massage_queue[getRoom(msg)] = []
-      show_queue msg
-    else
-      msg.send "Sorry @"+name+", only @ritacica can clear the queue or the bot will automatically do it on wednesday at 12:00"
+    clear_massage(msg, name)
 
   robot.hear /^massage\sshow/i, (msg) ->
     init msg
