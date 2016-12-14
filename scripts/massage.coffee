@@ -11,12 +11,14 @@
 _ = require('lodash')
 
 module.exports = (robot) ->
-  robot.brain.data.massage_queue ?= {}
+  robot.brain.data.massage_queue ?= []
+  robot.brain.data.swap_tuple ?= []
 
 
   robot.on "massage:start", ->
 
     robot.brain.data.massage_queue['massage'] = []
+    robot.brain.data.swap_tuple['massage'] = []
     robot.messageRoom "massage", "Massage queue is empty now, Add yourself to the queue using `massage me` or `massage next`"
 
   getRoom = (msg) ->
@@ -24,8 +26,8 @@ module.exports = (robot) ->
 
   init = (msg) ->
     room = getRoom msg
-    if !robot.brain.data.massage_queue[room]
-      robot.brain.data.massage_queue[room] = []
+    robot.brain.data.massage_queue[room] ?= []
+    robot.brain.data.swap_tuple[room] ?= []
 
   show_queue = (msg) ->
     room = getRoom(msg)
@@ -37,14 +39,39 @@ module.exports = (robot) ->
 
   add_to_queue = (msg, user='@' + msg.message.user.name) ->
     init msg
-    players = robot.brain.data.massage_queue[getRoom(msg)]
-    if user in players
+    massage_queue = robot.brain.data.massage_queue[getRoom(msg)]
+    if user in massage_queue
       msg.send "You are already in the queue"
     else
-      players.push(user)
+      massage_queue.push(user)
     show_queue msg
 
-  clear_massage = (msg, name) ->
+  swap_me = (msg) ->  
+    user = '@' + msg.message.user.name
+    massage_queue = robot.brain.data.massage_queue[getRoom(msg)]
+    msg.send massage_queue
+    msg.send robot.brain.data.swap_tuple[getRoom(msg)]
+    if user in massage_queue
+      switch robot.brain.data.swap_tuple[getRoom(msg)].length
+        when 0 then call_for_swappers(msg, user)
+        when 1 then perform_swap(msg, user)
+    else
+      msg.send "Sorry " + user + " you can't swap unless you are a member of the queue already." 
+    
+  call_for_swappers = (msg, user) ->
+    robot.brain.data.swap_tuple[getRoom(msg)].push(user)
+    msg.send user + " is looking for someone to swap with him, type `massage swap` if you want to accept the swap"
+
+  perform_swap = (msg, user) ->
+    swap_caller = robot.brain.data.swap_tuple[getRoom(msg)][0]
+    source_index = robot.brain.data.massage_queue[getRoom(msg)].indexOf(swap_caller)
+    target_index = robot.brain.data.massage_queue[getRoom(msg)].indexOf(user)
+    robot.brain.data.massage_queue[getRoom(msg)][source_index] = user
+    robot.brain.data.massage_queue[getRoom(msg)][target_index] = swap_caller
+
+    robot.brain.data.swap_tuple[getRoom(msg)] = []
+  clear_massage = (msg) ->
+    name = msg.message.user.name
     if name == 'ritacica'
       robot.brain.data.massage_queue[getRoom(msg)] = []
       show_queue msg
@@ -61,6 +88,9 @@ module.exports = (robot) ->
   robot.hear /^massage(\?|\snext|\s\+1)/i, (msg) ->
     add_to_queue msg
 
+  robot.hear /^massage(\?|\sswap|\s\+1)/i, (msg) ->
+    swap_me msg
+
   robot.hear /^massage((?:\s@[^\s]+){1,4})/i, (msg) ->
     players = msg.match[1].trim().split(' ')
     add_to_queue(msg, player) for player in players
@@ -73,8 +103,7 @@ module.exports = (robot) ->
     show_queue msg
 
   robot.hear /^massage\sclear/i, (msg) ->
-    name = msg.message.user.name
-    clear_massage(msg, name)
+    clear_massage(msg)
 
   robot.hear /^massage\sshow/i, (msg) ->
     init msg
