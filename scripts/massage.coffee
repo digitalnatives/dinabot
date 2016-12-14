@@ -77,7 +77,7 @@ module.exports = (robot) ->
     if robot.brain.data.massage_queue[getRoom(msg)].length == 0
       show_queue msg
     else
-      msg.send done_user + " finished go " + robot.brain.data.massage_queue[getRoom(msg)] + " it's your turn!!"
+      msg.send done_user + " finished go " + robot.brain.data.massage_queue[getRoom(msg)][0] + " it's your turn!!"
   clear_massage = (msg) ->
     name = msg.message.user.name
     if name == 'ritacica'
