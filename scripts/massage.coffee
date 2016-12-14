@@ -2,7 +2,8 @@
 #
 # Commands:
 # massage start            -Start over the massage queue
-# massage next             -Add me next in queue
+# massage next             -Call the next person
+# massage swap             -Ask and accept swapping with someone in the queue
 # massage me               -Add me next in queue
 # massage @user            -Add user next in queue
 # massage clear            -Clear the massage queue
@@ -19,7 +20,7 @@ module.exports = (robot) ->
 
     robot.brain.data.massage_queue['massage'] = []
     robot.brain.data.swap_tuple['massage'] = []
-    robot.messageRoom "massage", "Massage queue is empty now, Add yourself to the queue using `massage me` or `massage next`"
+    robot.messageRoom "massage", "Massage queue is empty now, Add yourself to the queue using `massage me`"
 
   getRoom = (msg) ->
     msg.message.user.room ? 'general'
@@ -33,7 +34,7 @@ module.exports = (robot) ->
     room = getRoom(msg)
     queue = robot.brain.data.massage_queue[room]
     if queue.length == 0
-      msg.send "Massage queue is empty now, Add yourself to the queue using `massage me` or `massage next`"
+      msg.send "Massage queue is empty now, Add yourself to the queue using `massage me`"
     else
       msg.send 'Massage queue: ' + queue.join(', ')
 
@@ -68,8 +69,15 @@ module.exports = (robot) ->
     target_index = robot.brain.data.massage_queue[getRoom(msg)].indexOf(user)
     robot.brain.data.massage_queue[getRoom(msg)][source_index] = user
     robot.brain.data.massage_queue[getRoom(msg)][target_index] = swap_caller
-
+    show_queue msg
     robot.brain.data.swap_tuple[getRoom(msg)] = []
+
+  next = (msg) ->
+    done_user = robot.brain.data.massage_queue[getRoom(msg)].shift()
+    if robot.brain.data.massage_queue[getRoom(msg)].length == 0
+      show_queue msg
+    else
+      msg.send done_user + " finished go " + robot.brain.data.massage_queue[getRoom(msg)] + " it's your turn!!"
   clear_massage = (msg) ->
     name = msg.message.user.name
     if name == 'ritacica'
@@ -86,7 +94,7 @@ module.exports = (robot) ->
     add_to_queue msg
 
   robot.hear /^massage(\?|\snext|\s\+1)/i, (msg) ->
-    add_to_queue msg
+    next msg
 
   robot.hear /^massage(\?|\sswap|\s\+1)/i, (msg) ->
     swap_me msg
