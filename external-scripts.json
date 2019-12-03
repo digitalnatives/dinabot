@@ -1,1 +1,1 @@
-["hubot-cron", "hubot-cron-json"]
+["hubot-cron", "hubot-cron-json", "hubot-redis-brain"]
