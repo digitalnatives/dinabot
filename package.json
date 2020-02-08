@@ -1,24 +1,10 @@
 {
-  "name": "hosted-hubot",
+  "name": "dinabot",
   "version": "2.7.1",
   "private": true,
-  "author": "GitHub Inc.",
-  "keywords": [
-    "github",
-    "hubot",
-    "campfire",
-    "bot"
-  ],
-  "description": "A simple helpful robot for your Company",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/github/hubot/raw/master/LICENSE"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/github/hubot.git"
+  "license": "MIT",
+  "scripts": {
+    "dev": "bin/hubot -a shell --name alfred"
   },
   "dependencies": {
     "hubot": "^3.3.2",
@@ -27,10 +13,11 @@
     "hubot-redis-brain": "^1.0.0",
     "hubot-scripts": "^2.17.2",
     "hubot-slack": "~2.2.0",
-    "lodash": "~4.17.15"
+    "lodash": "~4.17.15",
+    "node-fetch": "^2.6.0"
   },
   "engines": {
-    "node": ">= 0.8.x",
-    "npm": ">= 1.1.x"
+    "node": "v10",
+    "npm": "v6"
   }
 }
