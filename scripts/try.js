@@ -18,7 +18,7 @@ module.exports = robot => {
     fetch('https://google.com')
       .then(res => res.text())
       .then(() => {
-        msg.send('try me with fetch works')
+        msg.send('try me with fetch works. do env vars too? ' + process.env.HUBOT_FREEBESS_EMAIL)
       })
   })
 
