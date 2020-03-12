@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "bin/hubot -a shell --name alfred"
+    "dev": "hubot -a shell --name alfred"
   },
   "dependencies": {
     "hubot": "^3.3.2",
@@ -14,7 +14,8 @@
     "hubot-scripts": "^2.17.2",
     "hubot-slack": "~2.2.0",
     "lodash": "~4.17.15",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "puppeteer": "^2.1.1"
   },
   "engines": {
     "node": "v10",
