@@ -23,7 +23,7 @@ module.exports = robot => {
   })
 
   robot.respond(/try some/i, msg => {
-    puppeteer.launch({ headless: true })
+    puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
       .then(browser => browser.newPage())
       .then(page => page.goto('https://freebees.io/'))
       .then(response => {
