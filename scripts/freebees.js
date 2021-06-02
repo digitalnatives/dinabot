@@ -17,7 +17,7 @@ async function getHolidaysData() {
   await page.focus('#password-input')
   await page.keyboard.type(config.freebees.password)
   await page.$eval('#submit-button', btn => btn.click())
-  await page.waitFor(10000)
+  await page.waitFor(20000)
   const result = await page.evaluate(evaluate)
 
   await browser.close()
